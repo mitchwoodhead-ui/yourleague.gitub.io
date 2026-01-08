@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>League Schedule</title>
+<style>
+body{font-family:system-ui;background:#0c1a12;color:white;padding:14px}
+h2{text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.event{background:#162c1f;padding:14px;border-radius:14px;text-align:center;font-weight:600}
+</style>
+</head>
+<body>
+
+<nav>
+ <a href="index.html">Leaderboard</a> |
+ <a href="picks.html">Used Golfers</a> |
+ <a href="schedule.html">Schedule</a>
+</nav>
+<hr>
+
+<h2>🗓️ League Schedule</h2>
+<div id="events" class="grid"></div>
+
+<script>
+const SHEET_ID="1PgSO0Ua6hE2aoanKOK7VCF7JAr6grqlsQmNLFlKu6U4";
+const TAB="Sheet1";
+
+fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${TAB}&range=G2:BN2`)
+.then(r=>r.text())
+.then(text=>{
+ const json=JSON.parse(text.substr(47).slice(0,-2));
+ const cells=json.table.rows[0].c;
+ let html="";
+ cells.forEach(c=>{
+   if(c?.v){
+     html+=`<div class="event">${c.v}</div>`;
+   }
+ });
+ document.getElementById("events").innerHTML=html;
+});
+<script>
+const SHEET_ID="1PgSO0Ua6hE2aoanKOK7VCF7JAr6grqlsQmNLFlKu6U4";
+const TAB="Sheet1";
+
+fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${TAB}&range=G2:BN3`)
+.then(r=>r.text())
+.then(text=>{
+ const json=JSON.parse(text.substr(47).slice(0,-2));
+ const events=json.table.rows[0].c;   // Row 2
+ const purses=json.table.rows[1].c;   // Row 3
+
+ let html="";
+ for(let i=0;i<events.length;i++){
+   if(!events[i]?.v) continue;
+   html+=`
+    <div class="event">
+      <div>${events[i].v}</div>
+      <small>$${purses[i]?.v || ""}</small>
+    </div>`;
+ }
+ document.getElementById("events").innerHTML=html;
+});
+</script>
+
+
+</body>
+</html>
