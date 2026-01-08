@@ -1,0 +1,31 @@
+<script>
+const SHEET_ID="1PgSO0Ua6hE2aoanKOK7VCF7JAr6grqlsQmNLFlKu6U4";
+const TAB="Sheet1";   // change if needed
+
+fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${TAB}&range=F4:ZZ`)
+.then(r=>r.text())
+.then(text=>{
+const json=JSON.parse(text.substr(47).slice(0,-2));
+const rows=json.table.rows;
+let html="";
+rows.forEach(r=>{
+  if(!r.c[0]?.v) return;
+  const manager=r.c[0].v;
+  
+  // Take every OTHER column starting at index 1 (G, I, K, M...)
+  const picks=[];
+  for(let i=1;i<r.c.length;i+=2){
+    if(r.c[i]?.v) picks.push(r.c[i].v);
+  }
+
+  html+=`
+  <div class="card">
+    <div class="name">${manager}</div>
+    <div class="picks">
+      ${picks.map(p=>`<div class="pick">${p}</div>`).join("")}
+    </div>
+  </div>`;
+});
+document.getElementById("board").innerHTML=html;
+});
+</script>
