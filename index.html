@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Fantasy Golf Leaderboard</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f7f7f7;padding:12px}
+    h1{text-align:center;color:#333}
+    .row{background:white;padding:10px;border-radius:8px;margin:6px 0;display:flex;align-items:center}
+    .rank{font-size:20px;width:40px;font-weight:bold;color:#444}
+    .name{flex:1;font-weight:500;color:#222}
+    .pts{font-size:18px;font-weight:bold;color:#105021}
+  </style>
+</head>
+<body>
+  <h1>Leaderboard</h1>
+  <div id="leaderboard"></div>
+
+  <script>
+    const SHEET_ID = "1PgSO0Ua6hE2aoanKOK7VCF7JAr6grqlsQmNLFlKu6U4";
+    const TAB = "Leaders"; // Uses your already sorted data
+
+    fetch(`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${TAB}`)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows;
+        let html = "";
+        rows.forEach(r => {
+          html += `
+            <div class="row">
+              <div class="rank">${r.c[0]?.v || ""}</div>
+              <div class="name">${r.c[1]?.v || ""}</div>
+              <div class="pts">${r.c[2]?.v || ""} pts</div>
+            </div>`;
+        });
+        document.getElementById("leaderboard").innerHTML = html;
+      });
+  </script>
+</body>
+</html>
